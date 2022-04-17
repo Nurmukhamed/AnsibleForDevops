@@ -1,0 +1,15 @@
+[app]
+${app1_ip}
+${app2_ip}
+
+[db]
+${db_ip}
+
+[multi:children]
+app
+db
+
+[multi:vars]
+ansible_user=nartykaly
+ansible_port=22
+ansible_python_interpreter=/usr/bin/python3

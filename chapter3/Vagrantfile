@@ -1,0 +1,27 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "centos/8"
+  config.ssh.insert_key = false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.provider :libvirt do |v|
+    v.memory = 512
+    v.linked_clone = true
+  end
+
+  config.vm.define "app1" do |app|
+    app.vm.hostname = "orc-app1.test"
+    app.vm.network :default, ip: "192.168.122.4"
+  end
+
+  config.vm.define "app2" do |app|
+    app.vm.hostname = "orc-app2.test"
+    app.vm.network :default, ip: "192.168.122.5"
+  end
+
+  config.vm.define "db" do |db|
+    db.vm.hostname = "orc-db.test"
+    db.vm.network :default, ip: "192.168.122.6"
+  end
+end
