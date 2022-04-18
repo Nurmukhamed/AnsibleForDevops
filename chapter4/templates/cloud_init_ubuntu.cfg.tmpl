@@ -1,0 +1,42 @@
+#cloud-config
+# vim: syntax=yaml
+#
+# ***********************
+# 	---- for more examples look at: ------
+# ---> https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+# ******************************
+#
+# This is the configuration syntax that the write_files module
+# will know how to understand. encoding can be given b64 or gzip or (gz+b64).
+# The content will be decoded accordingly and then written to the path that is
+# provided.
+#
+# Note: Content strings here are truncated for example purposes.
+preserve_hostname: false
+hostname: ${server_hostname}
+
+users:
+  - name: nartykaly
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeZJMi6JV1U0EKmxTED8LFQ+Qzr9cjN/7mJ7U+JBtIe lindenvalley@worker
+       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvvmNsdPKQ5PPe9rR+CujQUO5/sZtzdcfo6VJIVbfFe clashofcoins@worker
+
+ssh_pwauth: True
+chpasswd:
+  list: |
+     root:terraform-libvirt-linux
+  expire: False
+
+package_update: true
+packages:
+  - vim
+  - wget
+  - jq
+  - python3-venv
+  - python3-pip
+  - sudo
+  - gnupg
+
