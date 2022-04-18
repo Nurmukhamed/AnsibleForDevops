@@ -1,5 +1,6 @@
 # ISO
 *.iso
+*.img
 *.qcow2
 .vagrant
 .terraform
