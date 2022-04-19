@@ -2,7 +2,7 @@ resource "libvirt_volume" "disk_solr" {
   name           = "disk-solr"
   base_volume_id = libvirt_volume.os_image_ubuntu.id
   pool           = libvirt_pool.ansible.name
-#  size           = 5361393152
+  size           = 5361393152
 }
 
 data "template_file" "user_data_solr" {
