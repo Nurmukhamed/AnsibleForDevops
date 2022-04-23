@@ -7,5 +7,6 @@
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
+*.swp
 config.sh
 inventory
