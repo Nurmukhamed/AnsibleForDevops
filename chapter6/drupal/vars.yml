@@ -1,0 +1,15 @@
+---
+# The path where Drupall will be downloaded and installed.
+drupal_core_path: "/var/www/drupal"
+
+# The resulting domain will be [domain].test (with .test appended).
+domain: "drupal"
+
+# Your Drupal site name.
+drupal_site_name: "Drupal Test"
+
+# Solr settings
+download_dir: /tmp
+solr_dir: /opt/solr
+solr_version: 8.11.1
+solr_checksum: sha512:4893f836aec84b03d7bfe574e59e305c03b5ede4a48020034fbe81440b8feee79e55fd9ead230e5b89b3f25124e9b56c1ddc4bb5c7f631cf4e846b9cab5f9a45

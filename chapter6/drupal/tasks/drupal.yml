@@ -1,0 +1,33 @@
+---
+- name: Ensure Drupal directory exists.
+  file:
+    path: "{{ drupal_core_path }}"
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Check if Drupal project already exists.
+  stat:
+    path: "{{ drupal_core_path }}/composer.json"
+  register: drupal_composer_json
+
+- name: Create Drupal project.
+  composer:
+    command: create-project
+    arguments: drupal/recommended-project "{{ drupal_core_path }}"
+    working_dir: "{{ drupal_core_path }}"
+    no_dev: true
+  become_user: www-data
+  when: not drupal_composer_json.stat.exists
+
+- name: Install Drupal.
+  command: >
+    drush si -y --site-name="{{ drupal_site_name }}"
+    --account-name=admin
+    --account-pass=admin
+    --db-url=mysql://{{ domain }}:1234@localhost/{{ domain }}
+    --root={{ drupal_core_path }}/web
+    chdir={{ drupal_core_path }}
+    creates={{ drupal_core_path }}/web/sites/default/settings.php
+  notify: restart apache
+  become_user: www-data
