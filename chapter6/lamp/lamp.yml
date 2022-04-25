@@ -1,0 +1,14 @@
+---
+- hosts: lamp
+  become: yes
+
+  pre_tasks:
+    - name: Install python3 mysql module.
+      pip: 
+        name: PyMySQL 
+  roles:
+    - geerlingguy.repo-epel
+    - geerlingguy.mysql
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.php-mysql

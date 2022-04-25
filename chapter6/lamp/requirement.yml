@@ -1,0 +1,7 @@
+---
+roles:
+  - name: geerlingguy.repo-epel
+  - name: geerlingguy.mysql
+  - name: geerlingguy.apache
+  - name: geerlingguy.php
+  - name: geerlingguy.php-mysql
