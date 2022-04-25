@@ -1,0 +1,7 @@
+---
+- hosts: lamp
+  become: yes
+
+  roles: 
+    - geerlingguy.java
+    - geerlingguy.solr
