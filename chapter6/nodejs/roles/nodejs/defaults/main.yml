@@ -1,0 +1,3 @@
+---
+node_npm_modules:
+  - forever
