@@ -11,7 +11,7 @@ resource "local_file" "ansible_inventory" {
 }
 
 resource "local_file" "bash_config" {
-  content = templatefile("templates/config.sh.tmpl",
+  content = templatefile("${path.module}/../templates/config.sh.tmpl",
     {
       pvt_key = var.pvt_key
     }

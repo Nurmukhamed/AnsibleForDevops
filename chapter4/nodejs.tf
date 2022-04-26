@@ -6,7 +6,7 @@ resource "libvirt_volume" "disk_nodejs" {
 }
 
 data "template_file" "user_data_nodejs" {
-  template = file("${path.module}/templates/cloud_init_centos7.cfg.tmpl")
+  template = file("${path.module}/../templates/cloud_init_centos7.cfg.tmpl")
   vars = {
     server_hostname = "nodejs.test"
   }

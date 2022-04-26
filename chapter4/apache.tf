@@ -6,7 +6,7 @@ resource "libvirt_volume" "disk_apache" {
 }
 
 data "template_file" "user_data_apache" {
-  template = file("${path.module}/templates/cloud_init_centos8.cfg.tmpl")
+  template = file("${path.module}/../templates/cloud_init_centos8.cfg.tmpl")
   vars = {
     server_hostname = "apache.test"
   }
