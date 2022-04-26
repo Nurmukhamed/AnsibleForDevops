@@ -10,3 +10,5 @@
 *.swp
 config.sh
 inventory
+__pycache__
+*.pyc
