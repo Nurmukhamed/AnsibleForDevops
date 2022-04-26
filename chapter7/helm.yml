@@ -1,0 +1,5 @@
+---
+- hosts: all
+
+  roles:
+    - geerlingguy.k8s.helm
