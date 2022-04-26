@@ -6,7 +6,7 @@ resource "libvirt_volume" "disk_app2" {
 }
 
 data "template_file" "user_data_app2" {
-  template = file("${path.module}/templates/cloud_init.cfg.tmpl")
+  template = file("${path.module}/../templates/cloud_init_centos8.cfg.tmpl")
   vars = {
     server_hostname = "orc-app2.test"
   }
