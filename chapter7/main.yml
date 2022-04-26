@@ -7,4 +7,4 @@
   tasks:
     - name: "Verify {{ my_color_choice }} is a form of blue."
       assert:
-        that: my_color_choice is 'blue'
+        that: my_color_choice is blue
