@@ -6,7 +6,7 @@ resource "libvirt_volume" "disk_lamp" {
 }
 
 data "template_file" "user_data_lamp" {
-  template = file("${path.module}/templates/cloud_init_centos7.cfg.tmpl")
+  template = file("${path.module}/../../templates/cloud_init_centos7.cfg.tmpl")
   vars = {
     server_hostname = "lamp.test"
   }

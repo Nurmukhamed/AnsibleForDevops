@@ -1,5 +1,5 @@
 resource "local_file" "ansible_inventory" {
-  content = templatefile("templates/inventory.tmpl",
+  content = templatefile("${path.module}/templates/inventory.tmpl",
     {
       lamp_ip = libvirt_domain.lamp.network_interface.0.addresses.0
     }
@@ -8,7 +8,7 @@ resource "local_file" "ansible_inventory" {
 }
 
 resource "local_file" "bash_config" {
-  content = templatefile("templates/config.sh.tmpl",
+  content = templatefile("${path.module}/../../templates/config.sh.tmpl",
     {
       pvt_key = var.pvt_key
     }
