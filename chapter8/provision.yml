@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: Create new Droplet.
+      community.digitalocean.digital_ocean_droplet:
+        state: absent
+        name: ansible-test
+        oauth_token: "{{ lookup('ansible.builtin.env', 'DO_API_TOKEN') }}"
+        size: s-1vcpu-1gb
+        private_networking: yes
+        image_id: centos-7-x64
+        region: nyc3
+        ssh_keys:
+          - 34359161
+        unique_name: yes
+      register: do
+
+    - debug: var=do.data.networks.v4[0].ip_address
+
+    - name: Add new host to our inventory.
+      add_host:
+        name: "{{ do.data.networks.v4[0].ip_address }}"
+        groups: do
+        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+      when: do.data is defined
+      changed_when: False
+
+- hosts: do
+  remote_user: root
+  gather_facts: False
+
+  tasks:
+    - name: Wait for hosts to become reachable.
+      wait_for_connection:
+
+
+    - name: Install tcpdump.
+      yum: name=tcpdump state=present
