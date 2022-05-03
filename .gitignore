@@ -12,3 +12,5 @@ config.sh
 inventory
 __pycache__
 *.pyc
+ansible-digital_ocean.cache
+inventory.py
