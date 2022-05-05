@@ -9,8 +9,8 @@ ${www2_ip}
 ${db1_ip}
 
 [lamp_db]
-${db1_ip}
-${db2_ip}
+${db1_ip} mysql_replication_role=master
+${db2_ip} mysql_replication_role=slave
 
 [lamp_memcached]
 ${memcached_ip}
