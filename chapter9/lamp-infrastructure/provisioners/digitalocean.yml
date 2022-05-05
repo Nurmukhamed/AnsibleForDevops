@@ -1,0 +1,52 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    droplets:
+      - { name: a4d.lamp.varnish, group: "lamp_varnish" }
+      - { name: a4d.lamp.www.1, group: "lamp_www" }
+      - { name: a4d.lamp.www.2, group: "lamp_www" }
+      - { name: a4d.lamp.db.1, group: "lamp_db" }
+      - { name: a4d.lamp.db.2, group: "lamp_db" }
+      - { name: a4d.lamp.memcached, group: "lamp_memcached" }
+
+  tasks:
+    - name: Provision DigitalOcean droplets.
+      community.digitalocean.digital_ocean_droplet:
+        state: "{{ item.state | default('absent') }}"
+        oauth_token: "{{ lookup('ansible.builtin.env', 'DO_API_TOKEN') }}"
+        name: "{{ item.name }}"
+        private_networking: yes
+        size: "{{ item.size | default('s-1vcpu-1gb') }}"
+        image: "{{ item.image | default('centos-7-x64') }}"
+        region: "{{ item.region | default('nyc3') }}"
+        ssh_keys: 
+          - "{{ item.ssh_key | default('34359161') }}"
+        unique_name: yes
+      register: created_droplets
+      with_items: "{{ droplets }}"
+    - name: Debug
+      debug:
+        msg: "{{ created_droplets.results }}"
+
+    - name: Add DigitalOcean hosts to inventory groups.
+      add_host:
+        name: "{{ item.1.data.droplet.networks.v4[0].ip_address }}"
+        groups: "do, {{ droplets[item.0].group }}, {{ item.1.data.droplet.name }}"
+        ansible_user: root
+        mysql_replication_role: >-
+          {{ 'master' if (item.1.data.droplet.name == 'a4d.lamp.db.1') 
+          else 'slave' }}
+        mysql_server_id: "{{ item.0 }}"
+      when: item.1.data is defined
+      with_indexed_items: "{{ created_droplets.results }}"
+
+- hosts: do
+  remote_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Wait for hosts to become reachable.
+      wait_for_connection: 
