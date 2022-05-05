@@ -19,11 +19,6 @@
             password: secret
             priv: "*.*:SELECT"
         mysql_replication_master: "{{ groups['a4d.lamp.db.1'][0] }}"
-  tasks:
-    - name: Restart mariadb service
-      service: 
-        name: mariadb
-        state: restarted
 
   roles:
     - geerlingguy.firewall
