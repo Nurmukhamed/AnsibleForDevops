@@ -15,7 +15,7 @@
   tasks:
     - name: Provision DigitalOcean droplets.
       community.digitalocean.digital_ocean_droplet:
-        state: "{{ item.state | default('absent') }}"
+        state: "{{ item.state | default('present') }}"
         oauth_token: "{{ lookup('ansible.builtin.env', 'DO_API_TOKEN') }}"
         name: "{{ item.name }}"
         private_networking: yes
