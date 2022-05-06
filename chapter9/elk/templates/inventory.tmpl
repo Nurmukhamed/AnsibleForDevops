@@ -1,0 +1,14 @@
+[logs]
+${logs_ip}
+
+[web]
+${web_ip}
+
+[multi:children]
+logs
+web
+
+[multi:vars]
+ansible_user=nartykaly
+ansible_port=22
+ansible_python_interpreter=/usr/bin/python3

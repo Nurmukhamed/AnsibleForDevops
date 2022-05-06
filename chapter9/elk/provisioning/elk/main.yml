@@ -1,0 +1,21 @@
+---
+- hosts: logs
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - vars/main.yml
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=true cache_valid_time=86400
+
+  roles:
+    - geerlingguy.java
+    - geerlingguy.nginx
+    - geerlingguy.pip
+    - geerlingguy.elasticsearch
+    - geerlingguy.elasticsearch-curator
+    - geerlingguy.kibana
+    - geerlingguy.logstash
+    - geerlingguy.filebeat
