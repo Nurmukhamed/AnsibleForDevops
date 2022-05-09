@@ -53,6 +53,20 @@ resource "libvirt_domain" "db2" {
     listen_type = "address"
     autoport    = true
   }
+
+  provisioner "remote-exec" {
+    connection {
+      host        = libvirt_domain.db2.network_interface.0.addresses.0
+      user        = "nartykaly"
+      type        = "ssh"
+      private_key = "${file("${var.pvt_key}")}"
+      timeout     = "2m"
+    }
+
+    inline = [
+      "while [ ! -f /tmp/cloud-init.txt ]; do sleep 2; done;",
+    ]
+  }
 }
 
 # IPs: use wait_for_lease true or after creation use terraform refresh and terraform show for the ips of domain

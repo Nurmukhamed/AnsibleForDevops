@@ -31,7 +31,6 @@ chpasswd:
   expire: False
 
 runcmd:
-  - systemctl stop sshd
   - yum update -q -y
   - yum install python3 -q -y
-  - systemctl start sshd
+  - touch /tmp/cloud-init.txt
