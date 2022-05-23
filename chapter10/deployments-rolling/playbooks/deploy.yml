@@ -2,6 +2,7 @@
 - hosts: nodejs-api
   gather_facts: no
   become: yes
+  serial: 2
 
   vars_files:
     - vars.yml
