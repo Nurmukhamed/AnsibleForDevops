@@ -1,0 +1,35 @@
+---
+- name: Firewall configuration
+  hosts: all
+  become: yes
+
+  vars:
+    firewall_allowed_tcp_ports:
+      - "22"
+      - "80"
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=yes cache_valid_time=3600
+
+    - set_fact:
+            haproxy_backend_servers: "{{ haproxy_backend_servers|default([]) + [{'name': item, 'address': item + ':80' }] }}"
+      with_items: 
+        - "{{ groups['app'] }}"
+
+  roles:
+    - geerlingguy.firewall
+
+- name: HAProxy Load Balancer setup.
+  hosts: balancer
+  become: yes
+
+  roles:
+    - geerlingguy.haproxy
+
+- name: Apache webserver setup.
+  hosts: app
+  become: yes
+
+  roles:
+    - geerlingguy.apache

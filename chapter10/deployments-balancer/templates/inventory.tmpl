@@ -1,0 +1,15 @@
+[balancer]
+${bal1_ip}
+
+[app]
+${app1_ip}
+${app2_ip}
+
+[deployments:children]
+balancer
+app
+
+[deployments:vars]
+ansible_user=nartykaly
+ansible_port=22
+ansible_python_interpreter=/usr/bin/python3
