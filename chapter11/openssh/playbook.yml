@@ -1,0 +1,92 @@
+---
+- hosts: openssh
+  become: yes
+
+  handlers:
+    - name: restart ssh
+      service: 
+        name: "{{ ssh_service_name | default('ssh') }}"
+        state: restarted
+
+  tasks:
+    - name: Set ssh service name on Ubuntu.
+      set_fact:
+        ssh_service_name: "ssh"
+      when: ansible_os_family == 'Debian'
+
+    - name: Set ssh service name on Redhat.
+      set_fact:
+        ssh_service_name: "sshd"
+      when: ansible_os_family == 'Redhat'
+
+    - name: Update SSH configuration to be more secure.
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: 'sshd -t -f %s'
+      with_items:
+        - regexp: "^PasswordAuthentication"
+          line: "PasswordAuthentication no"
+        - regexp: "^PermitRootLogin"
+          line: "PermitRootLogin no"
+        - regexp: "^Port"
+          line: "Port 2849"
+      notify: restart ssh
+
+    - name: Allow sshd to listen on tcp port 2849.
+      seport:
+        ports: 2849
+        proto: tcp
+        setype: ssh_port_t
+        state: present
+      when: ansible_selinux.status == 'enabled'
+
+    - name: Add sudo rights for deployment user.
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^johndoe'
+        line: 'johndoe ALL=(ALL) NOPASSWD: ALL'
+        state: present
+        validate: 'visudo -cf %s'
+
+    - name: Remove unused packages.
+      package:
+        name:
+          - nano
+          - sendmail
+        state: absent
+#        purge: yes
+
+    - name: Install yum-cron.
+      yum:
+        name: yum-cron
+        state: present
+      when: ansible_os_family == 'Redhat'
+
+    - name: Ensure yum-cron is running and enabled on boot.
+      service:
+        name: yum-cron
+        state: started
+        enabled: yes
+      when: ansible_os_family == 'Redhat'
+
+    - name: Install unattended upgrades package.
+      apt:
+        name: unattended-upgrades
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Copy unattended-upgrades configuration files in place.
+      template:
+        src: "./templates/{{ item }}.j2"
+        dest: "/etc/apt/apt.conf.d/{{ item }}"
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - 20auto-upgrades
+        - 50unattended-upgrades
+      when: ansible_os_family == 'Debian'
+
