@@ -5,7 +5,7 @@
   handlers:
     - name: restart ssh
       service: 
-        name: "{{ ssh_service_name | default('ssh') }}"
+        name: "{{ ssh_service_name | default('sshd') }}"
         state: restarted
 
   tasks:
@@ -13,11 +13,6 @@
       set_fact:
         ssh_service_name: "ssh"
       when: ansible_os_family == 'Debian'
-
-    - name: Set ssh service name on Redhat.
-      set_fact:
-        ssh_service_name: "sshd"
-      when: ansible_os_family == 'Redhat'
 
     - name: Update SSH configuration to be more secure.
       lineinfile:
