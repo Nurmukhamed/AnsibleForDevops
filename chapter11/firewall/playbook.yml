@@ -1,0 +1,118 @@
+---
+- hosts: centos
+  become: yes
+
+  roles:
+    - geerlingguy.repo-epel
+
+- hosts: firewall
+  become: yes
+
+  pre_tasks:
+    - name: Cache apt
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == 'Debian'
+
+  tasks:
+    - name: Install ufw before starting works.
+      apt:
+        name: ufw
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure that ufw service is running and enabled.
+      service:
+        name: ufw
+        state: started
+        enabled: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Install firewalld package.
+      yum:
+        name: firewalld
+        state: present
+      when: ansible_os_family == 'Redhat'
+
+    - name: Ensure that firewalld service is running and enabled.
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+      when: ansible_os_family == 'Redhat'
+
+    - name: Configure open ports with ufw.
+      ufw:
+        rule: "{{ item.rule }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      with_items:
+        - { rule: 'allow', port: 22, proto: 'tcp' }
+        - { rule: 'allow', port: 80, proto: 'tcp' }
+        - { rule: 'allow', port: 123, proto: 'udp' }
+      when: ansible_os_family == 'Debian'
+
+    - name: Configure default incoming/outgoung rules with ufw.
+      ufw:
+        direction: "{{ item.direction }}"
+        policy: "{{ item.policy }}"
+        state: enabled
+      with_items:
+        - { direction: outgoing, policy: allow }
+        - { direction: incoming, policy: deny }
+      when: ansible_os_family == 'Debian'
+
+    - name: Configure open ports with firewalld.
+      firewalld:
+        state: "{{ item.state }}"
+        port: "{{ item.port }}"
+        zone: external
+        immediate: yes
+        permanent: yes
+      with_items:
+        - { state: 'enabled', port: '22/tcp' }
+        - { state: 'enabled', port: '80/tcp' }
+        - { state: 'enabled', port: '123/udp' }
+      when: ansible_os_family == 'Redhat'
+
+    - name: Install fail2ban (Redhat).
+      yum:
+        name: fail2ban
+        state: present
+        enablerepo: epel
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install fail2ban (Debian).
+      apt:
+        name: fail2ban
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure fail2ban is running and enabled on boot.
+      service:
+        name: fail2ban
+        state: started
+        enabled: yes
+
+- hosts: centos
+  become: yes
+
+  tasks:
+    - name: Install Python SELinux library.
+      yum:
+        name: libselinux-python
+        state: present
+
+    - name: Ensure SELinux is enabled in 'targeted' mode.
+      selinux:
+        policy: targeted
+        state: enforcing
+
+    - name: Ensure httpd can connect to the network
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+      when: ansible_selinux.status == 'enabled'
+

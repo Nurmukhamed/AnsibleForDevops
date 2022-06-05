@@ -1,0 +1,14 @@
+[ubuntu]
+${ubuntu_ip}
+
+[centos]
+${centos7_ip} ansible_python_interpreter=/usr/bin/python
+
+[firewall:children]
+ubuntu
+centos
+
+[firewall:vars]
+ansible_user=nartykaly
+ansible_port=22
+ansible_python_interpreter=/usr/bin/python3
