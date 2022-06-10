@@ -1,17 +1,17 @@
 ---
 - hosts: centos
-  become: yes
+  become: true
 
   roles:
     - geerlingguy.repo-epel
 
 - hosts: firewall
-  become: yes
+  become: true
 
   pre_tasks:
     - name: Cache apt
       apt:
-        update_cache: yes
+        update_cache: true
         cache_valid_time: 3600
       when: ansible_os_family == 'Debian'
 
@@ -68,8 +68,8 @@
         state: "{{ item.state }}"
         port: "{{ item.port }}"
         zone: external
-        immediate: yes
-        permanent: yes
+        immediate: true
+        permanent: true
       with_items:
         - { state: 'enabled', port: '22/tcp' }
         - { state: 'enabled', port: '80/tcp' }
@@ -93,10 +93,10 @@
       service:
         name: fail2ban
         state: started
-        enabled: yes
+        enabled: true
 
 - hosts: centos
-  become: yes
+  become: true
 
   tasks:
     - name: Install Python SELinux library.
@@ -112,7 +112,6 @@
     - name: Ensure httpd can connect to the network
       seboolean:
         name: httpd_can_network_connect
-        state: yes
-        persistent: yes
+        state: true
+        persistent: true
       when: ansible_selinux.status == 'enabled'
-
