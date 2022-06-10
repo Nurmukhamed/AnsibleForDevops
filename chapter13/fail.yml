@@ -1,0 +1,26 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+
+  vars:
+    should_fail_via_fail: false
+    should_fail_via_assert: false
+    should_fail_via_complex_assert: true
+
+  tasks:
+    - name: Fail if conditions warrant a failure.
+      fail:
+        msg: "There was an epic failure."
+      when: should_fail_via_fail
+
+    - name: Stop playbook if an assertion isn't validated.
+      assert:
+        that: "should_fail_via_assert != true"
+
+    - name: Assertions can have contain conditions.
+      assert:
+        that:
+          - should_fail_via_fail != true
+          - should_fail_via_assert != true
+          - should_fail_via_complex_assert != true
