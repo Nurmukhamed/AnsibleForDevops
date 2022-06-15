@@ -1,0 +1,6 @@
+---
+- name: Install Pip.
+  apt: name=python3-pip state=present
+
+- name: Install Docker Python library.
+  pip: name=docker state=present
